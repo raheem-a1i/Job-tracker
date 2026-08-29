@@ -1,0 +1,23 @@
+# Render blueprint — deploy the whole app as one Node web service.
+# In the Render dashboard: New > Blueprint, point it at this repo.
+services:
+  - type: web
+    name: job-market-tracker
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    # A persistent disk keeps jobs/history across redeploys. Remove this block
+    # (and DATA_DIR) on the free plan if disks aren't available — the app will
+    # just re-seed on each restart instead.
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: DATA_DIR
+        value: /data
+      - key: SOURCES
+        value: remotive,remoteok,arbeitnow

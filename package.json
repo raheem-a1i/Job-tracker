@@ -1,0 +1,22 @@
+{
+  "name": "job-market-signal-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scrapes job postings, uses Claude to extract skills/roles/salary, and surfaces trends in an interactive dashboard.",
+  "type": "module",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n server,client -c blue,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "refresh": "npm --prefix server run refresh",
+    "build": "npm --prefix server install && npm --prefix client install && npm --prefix client run build",
+    "start": "node --env-file-if-exists=.env server/src/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

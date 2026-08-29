@@ -1,0 +1,72 @@
+// Shared vocabulary for extraction — the canonical skills, roles, and seniority
+// levels the extractors classify into, so their output aggregates cleanly.
+
+export const ROLE_CATEGORIES = [
+  'Frontend',
+  'Backend',
+  'Full Stack',
+  'Mobile',
+  'Data Engineering',
+  'Data Science',
+  'Machine Learning',
+  'DevOps / SRE',
+  'Security',
+  'QA',
+  'Design',
+  'Product',
+  'Management',
+  'Non-technical',
+  'Other',
+];
+
+export const SENIORITY_LEVELS = ['Intern', 'Junior', 'Mid', 'Senior', 'Lead', 'Principal'];
+
+// Canonical skill name -> regex of aliases, used to detect skills in text.
+export const SKILL_PATTERNS = {
+  JavaScript: /\bjavascript\b|\bjs\b/i,
+  TypeScript: /\btypescript\b|\bts\b/i,
+  React: /\breact(\.?js)?\b/i,
+  'Vue.js': /\bvue(\.?js)?\b/i,
+  Angular: /\bangular\b/i,
+  'Next.js': /\bnext\.?js\b/i,
+  'Node.js': /\bnode(\.?js)?\b/i,
+  Python: /\bpython\b/i,
+  Django: /\bdjango\b/i,
+  Flask: /\bflask\b/i,
+  Go: /\b(golang|go)\b/i,
+  Rust: /\brust\b/i,
+  Java: /\bjava\b(?!script)/i,
+  'C#': /\bc#|\.net\b/i,
+  Ruby: /\bruby\b|\brails\b/i,
+  PHP: /\bphp\b|\blaravel\b/i,
+  GraphQL: /\bgraphql\b/i,
+  'REST APIs': /\brest(ful)?\b|\brest apis?\b/i,
+  PostgreSQL: /\bpostgres(ql)?\b/i,
+  MySQL: /\bmysql\b/i,
+  MongoDB: /\bmongo(db)?\b/i,
+  Redis: /\bredis\b/i,
+  SQL: /\bsql\b/i,
+  AWS: /\baws\b|\bamazon web services\b/i,
+  GCP: /\bgcp\b|\bgoogle cloud\b/i,
+  Azure: /\bazure\b/i,
+  Docker: /\bdocker\b/i,
+  Kubernetes: /\bkubernetes\b|\bk8s\b/i,
+  Terraform: /\bterraform\b/i,
+  'CI/CD': /\bci\/?cd\b|\bgithub actions\b|\bjenkins\b/i,
+  Kafka: /\bkafka\b/i,
+  Spark: /\bspark\b/i,
+  Airflow: /\bairflow\b/i,
+  Snowflake: /\bsnowflake\b/i,
+  dbt: /\bdbt\b/i,
+  PyTorch: /\bpytorch\b/i,
+  TensorFlow: /\btensorflow\b/i,
+  'scikit-learn': /\bscikit-?learn\b|\bsklearn\b/i,
+  pandas: /\bpandas\b/i,
+  LLMs: /\bllms?\b|\blarge language models?\b/i,
+  RAG: /\brag\b|\bretrieval[- ]augmented\b/i,
+  Tailwind: /\btailwind\b/i,
+  Figma: /\bfigma\b/i,
+  Git: /\bgit\b/i,
+};
+
+export const ALL_SKILLS = Object.keys(SKILL_PATTERNS);

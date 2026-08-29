@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__visualize__read_me",
+      "Bash(npm -v)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(npm install *)",
+      "Bash(npm --prefix server install --no-fund --no-audit)",
+      "Bash(npm --prefix client install --no-fund --no-audit)",
+      "Bash(SOURCES=sample node src/refreshCli.js)",
+      "Bash(npm run *)",
+      "PowerShell(py --version)",
+      "PowerShell(py -c \"import openpyxl; print\\('openpyxl', openpyxl.__version__\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node src/index.js)",
+      "Bash(echo \"backend starting \\(pid $!\\)\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:4000/api/status)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const s=JSON.parse\\(d\\);console.log\\('jobs:',s.meta.jobCount,'refreshing:',s.refreshing\\)}\\)\")",
+      "Bash(node \"C:/Users/Raheem/AppData/Local/Temp/claude/C--Users-Raheem-Desktop-Codeing/7f3542ab-3eb0-4ff8-a089-af5405168868/scratchpad/saltest.mjs\")",
+      "Bash(node _saltest.mjs)",
+      "Bash(rm -f _saltest.mjs)",
+      "Bash(node _dbg.mjs)",
+      "Bash(rm -f _dbg.mjs)",
+      "Bash(node _localtest.mjs)",
+      "Bash(LOCAL_AI_MODEL=Xenova/nli-deberta-v3-small node _localtest.mjs)",
+      "Bash(AI_PROVIDER=local SOURCES=sample node src/refreshCli.js)",
+      "Bash(sed -i '/^ANTHROPIC_API_KEY/d; /^CLAUDE_MODEL/d; /^AI_CONCURRENCY/d' .env)",
+      "Bash(sed 's/=.*/=***/' .env)",
+      "Bash(grep -v '^$')",
+      "Bash(rm -f server/data/jobs.json server/data/meta.json server/data/history.json)",
+      "Bash(sed -i 's/^AI_MAX_JOBS=.*/AI_MAX_JOBS=300/' .env)",
+      "Bash(printf 'AI_MAX_JOBS=300\\\\n')",
+      "Bash(node _nontest.mjs)"
+    ]
+  }
+}
