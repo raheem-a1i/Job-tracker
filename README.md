@@ -44,12 +44,17 @@ npm run install:all
 cp .env.example .env
 #   then set ANTHROPIC_API_KEY=sk-ant-...  (otherwise the free heuristic is used)
 
-# 3. Run backend + frontend together
-npm run dev
+# 3. Build the client, then run the app (one server for app + API)
+npm run build
+npm start
 ```
 
-- Dashboard: http://localhost:5173
-- API: http://localhost:4000
+Open **http://localhost:4000** — a single Node server hosts both the dashboard
+and the API. (`npm start` reads `.env`, so the extractor badge shows **Claude**
+when `ANTHROPIC_API_KEY` is set.)
+
+Prefer hot-reload while developing? Run `npm run dev` instead — Vite serves the
+dashboard on http://localhost:5173 and proxies the API to http://localhost:4000.
 
 On first boot the backend auto-runs one refresh so the dashboard isn't empty.
 Click **Refresh data** in the UI to scrape + re-extract at any time.
@@ -158,6 +163,9 @@ server/src/
   analytics.js  trend computation
   index.js      Express API
 client/src/
-  components/    charts, filters, cards, table, JobFitCoach
-  App.jsx        dashboard
+  components/    Filters, SummaryCards, SkillsList, MySkills, SkillGap,
+                 DemandHistory, Charts (salary/seniority), JobsTable, JobFitCoach
+  useMySkills.js shared My Skills state (localStorage)
+  api.js         backend fetch wrappers
+  App.jsx        dashboard shell
 ```
