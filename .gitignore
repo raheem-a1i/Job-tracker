@@ -5,3 +5,6 @@ server/data/*.json
 !server/data/.gitkeep
 *.log
 .DS_Store
+
+# Claude Code local settings (personal, machine-specific)
+.claude/settings.local.json

@@ -1,8 +1,10 @@
 // Interactive filter bar. Lifts state up to App via onChange.
 export default function Filters({ facets, filters, onChange }) {
+  // Set one filter, or clear them all.
   const set = (key) => (e) => onChange({ ...filters, [key]: e.target.value });
   const clear = () => onChange({});
 
+  // A labeled dropdown of facet values, with an "All" (no filter) option.
   const select = (key, label, options) => (
     <label>
       {label}

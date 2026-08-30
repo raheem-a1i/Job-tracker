@@ -1,3 +1,4 @@
+// App entry point: mount <App> into the page.
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';

@@ -1,18 +1,22 @@
+// Top-level dashboard: loads data from the API, holds shared state
+// (filters, My Skills, saved jobs), and lays out all the panels.
 import { useEffect, useState, useCallback, useRef } from 'react';
 import './components/chartSetup.js';
 import { getStatus, getTrends, getJobs, getSkillGraph, getHistory, startRefresh } from './api.js';
 import { useMySkills } from './useMySkills.js';
+import { useSavedJobs } from './useSavedJobs.js';
 import Filters from './components/Filters.jsx';
 import SummaryCards from './components/SummaryCards.jsx';
-import { SeniorityChart, SalaryChart } from './components/Charts.jsx';
 import SkillsList from './components/SkillsList.jsx';
 import MySkills from './components/MySkills.jsx';
 import SkillGap from './components/SkillGap.jsx';
 import DemandHistory from './components/DemandHistory.jsx';
 import JobsTable from './components/JobsTable.jsx';
 import JobFitCoach from './components/JobFitCoach.jsx';
+import SavedJobs from './components/SavedJobs.jsx';
 
 export default function App() {
+  // Dashboard state: API data, active filters, and UI flags.
   const [status, setStatus] = useState(null);
   const [filters, setFilters] = useState({});
   const [trends, setTrends] = useState(null);
@@ -26,6 +30,7 @@ export default function App() {
   const pollRef = useRef(null);
 
   const mySkills = useMySkills();
+  const saved = useSavedJobs();
   const drillTo = (skill) => setFilters((f) => ({ ...f, skill }));
 
   // Trends + jobs depend on the active filters.
@@ -56,11 +61,13 @@ export default function App() {
     }
   }, []);
 
+  // On mount: fetch status and the whole-dataset panels.
   useEffect(() => {
     getStatus().then(setStatus).catch((e) => setError(e.message));
     loadGlobal();
   }, [loadGlobal]);
 
+  // Reload trends + jobs whenever the filters change.
   useEffect(() => {
     setLoading(true);
     loadData(filters);
@@ -82,6 +89,7 @@ export default function App() {
 
   useEffect(() => () => clearInterval(pollRef.current), []);
 
+  // Start a scrape + extract, then poll status until it finishes.
   const onRefresh = async () => {
     try {
       setError(null);
@@ -99,6 +107,7 @@ export default function App() {
 
   return (
     <div className="app">
+      {/* Header: title, extractor badge, and the refresh button */}
       <header className="header">
         <div>
           <h1>Job Market Signal Tracker</h1>
@@ -140,10 +149,27 @@ export default function App() {
 
       {error && <div className="panel error" style={{ marginBottom: 20 }}>Error: {error}</div>}
 
-      <Filters facets={facets} filters={filters} onChange={setFilters} />
+      <div className="panel" style={{ marginBottom: 20 }}>
+        <h3>How to read this</h3>
+        <p className="muted" style={{ fontSize: 13, lineHeight: 1.6 }}>
+          The <strong>Job Fit Coach</strong> (just below) uses Claude to compare a posting you pick
+          against the skills in <strong>My Skills</strong>, returning a fit verdict, your strengths,
+          gaps, interview talking points, and a prep plan. Add skills to <strong>My Skills</strong>{' '}
+          to also unlock: <strong>Skill gap</strong> recommends what to learn next (skills that pair
+          with yours and are in demand), <strong>Demand over time</strong> tracks your skills across
+          refreshes, and the postings table scores each job by how many of your skills it needs.
+          Click any skill to drill the dashboard into it. Signals were extracted by{' '}
+          {status?.provider === 'claude'
+            ? 'Claude, with a keyword fallback'
+            : 'the keyword heuristic'}.
+        </p>
+      </div>
 
+      {/* Always-visible personal tools */}
+      <SavedJobs saved={saved} postings={jobs} />
       <JobFitCoach />
 
+      {/* Dashboard proper, shown once the first data has loaded */}
       {loading || !trends ? (
         <div className="loading">Loading market signals…</div>
       ) : (
@@ -176,27 +202,16 @@ export default function App() {
             <DemandHistory history={history} mySkills={mySkills.skills} />
           </div>
 
-          <div className="grid-2">
-            <SalaryChart data={trends.salaryByRole} />
-            <SeniorityChart data={trends.seniority} />
-          </div>
+          {/* Search/filter bar sits just above the postings table */}
+          <Filters facets={facets} filters={filters} onChange={setFilters} />
 
-          <div className="panel" style={{ marginBottom: 20 }}>
-            <h3>How to read this</h3>
-            <p className="muted" style={{ fontSize: 13, lineHeight: 1.6 }}>
-              Add skills to <strong>My Skills</strong> to unlock personalized features:{' '}
-              <strong>Skill gap</strong> recommends what to learn next (skills that pair with yours
-              and are in demand), <strong>Demand over time</strong> tracks your skills across
-              refreshes, and the postings table scores each job by how many of your skills it needs.
-              Click any skill to drill the dashboard into it. Salary bands show the median
-              annualized midpoint per role. Signals were extracted by{' '}
-              {status?.provider === 'claude'
-                ? 'Claude, with a keyword fallback'
-                : 'the keyword heuristic'}.
-            </p>
-          </div>
-
-          <JobsTable jobs={jobs} total={jobTotal} mySkills={mySkills.skills} />
+          <JobsTable
+            jobs={jobs}
+            total={jobTotal}
+            mySkills={mySkills.skills}
+            onToggleSave={saved.toggle}
+            savedIds={saved.ids}
+          />
         </>
       )}
     </div>

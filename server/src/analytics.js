@@ -83,7 +83,6 @@ export function computeTrends(jobs) {
     totalJobs: jobs.length,
     topSkills: topSkills(jobs),
     roles: distribution(jobs, 'role'),
-    seniority: distribution(jobs, 'seniority'),
     salaryByRole: salaryByRole(jobs),
   };
 }

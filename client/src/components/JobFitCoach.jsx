@@ -1,6 +1,8 @@
+// Job Fit Coach panel: pick a posting, compare it to My Skills via Claude.
 import { useEffect, useState } from 'react';
 import { getJobs, getJobFit } from '../api.js';
 
+// Read the up-to-5 skills the user saved in My Skills (from localStorage).
 function readSavedSkills() {
   try {
     const parsed = JSON.parse(localStorage.getItem('jmt.mySkills') || '[]');
@@ -12,6 +14,7 @@ function readSavedSkills() {
   }
 }
 
+// One result card (Strengths, Gaps, etc.) showing a bullet list.
 function ResultList({ title, items }) {
   return (
     <section className="jobfit-card">
@@ -38,6 +41,7 @@ export default function JobFitCoach() {
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState('');
 
+  // Load the postings to populate the dropdown (and keep the current pick).
   async function loadJobs() {
     try {
       setLoadingJobs(true);
@@ -57,6 +61,7 @@ export default function JobFitCoach() {
     loadJobs();
   }, []);
 
+  // Send the chosen job + saved skills to the server for a Claude analysis.
   async function handleAnalyze() {
     const savedSkills = readSavedSkills();
     setSkillsUsed(savedSkills);
@@ -128,6 +133,7 @@ export default function JobFitCoach() {
         </p>
       )}
 
+      {/* Claude's result: a verdict + summary, then four detail cards. */}
       {analysis && (
         <div className="jobfit-results">
           <section className="jobfit-verdict">

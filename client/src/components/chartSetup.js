@@ -3,22 +3,13 @@ import {
   Chart,
   CategoryScale,
   LinearScale,
-  BarElement,
   LineElement,
   PointElement,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-Chart.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Tooltip,
-  Legend,
-);
+Chart.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend);
 
 Chart.defaults.color = '#9aa3b5';
 Chart.defaults.borderColor = '#2a2f3e';

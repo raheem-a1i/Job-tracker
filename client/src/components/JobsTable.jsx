@@ -1,14 +1,7 @@
 // Recent postings with their extracted signals, plus a match score against the
 // user's My Skills list (share of your skills each posting requires).
 import { useMemo, useState } from 'react';
-
-function salaryLabel(s) {
-  if (!s || (s.min == null && s.max == null)) return '—';
-  const k = (n) => `${Math.round(n / 1000)}k`;
-  const cur = s.currency === 'EUR' ? '€' : s.currency === 'GBP' ? '£' : '$';
-  if (s.min != null && s.max != null) return `${cur}${k(s.min)}–${cur}${k(s.max)}`;
-  return `${cur}${k(s.min ?? s.max)}`;
-}
+import { salaryLabel, postingToSavedJob } from '../jobFormat.js';
 
 // Comparable annual figure for salary sorting: midpoint of the band, or the
 // single bound. Non-annual (hourly/monthly) or missing salaries return null so
@@ -33,7 +26,7 @@ function relDate(iso) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-export default function JobsTable({ jobs, total, mySkills = [] }) {
+export default function JobsTable({ jobs, total, mySkills = [], onToggleSave, savedIds }) {
   const [sort, setSort] = useState('date'); // date | salary-desc | salary-asc | match
   const [senioritySort, setSenioritySort] = useState('none'); // none | high | low
   const [hideNoSkills, setHideNoSkills] = useState(true);
@@ -162,7 +155,17 @@ export default function JobsTable({ jobs, total, mySkills = [] }) {
                       <span className="pill role">{e.role || '—'}</span>
                       {mode && <span className={`pill mode ${mode.toLowerCase()}`}>{mode}</span>}
                     </div>
-                    <div style={{ marginTop: 4 }}>
+                    <div style={{ marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      {onToggleSave && (
+                        <button
+                          className={`save-star ${savedIds?.has(j.id) ? 'on' : ''}`}
+                          onClick={() => onToggleSave(postingToSavedJob(j))}
+                          title={savedIds?.has(j.id) ? 'Remove from tracker' : 'Save to tracker'}
+                          aria-label={savedIds?.has(j.id) ? 'Remove from tracker' : 'Save to tracker'}
+                        >
+                          {savedIds?.has(j.id) ? '★' : '☆'}
+                        </button>
+                      )}
                       {j.url ? (
                         <a href={j.url} target="_blank" rel="noreferrer">{j.title}</a>
                       ) : (
