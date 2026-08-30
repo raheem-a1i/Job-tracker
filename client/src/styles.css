@@ -163,6 +163,31 @@ button.pill { cursor: pointer; font-family: inherit; }
 .pill.mode.hybrid { color: var(--warn); border-color: rgba(246, 193, 119, .4); }
 .pill.mode.onsite { color: var(--accent); border-color: rgba(110, 168, 254, .4); }
 
+/* Claude Job Fit Coach */
+.jobfit { margin-bottom: 20px; }
+.jobfit h3 { margin: 0 0 4px; font-size: 16px; }
+.jobfit-sub { color: var(--muted); font-size: 13px; margin: 0 0 16px; max-width: 640px; line-height: 1.5; }
+.jobfit-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: end; }
+@media (max-width: 720px) { .jobfit-controls { grid-template-columns: 1fr; } }
+.jobfit-controls label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.jobfit-controls select {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 11px; font-size: 14px;
+}
+.jobfit-controls select:disabled { opacity: .6; }
+.jobfit-skills { margin: 12px 0 0; font-size: 13px; }
+.jobfit-error { margin: 12px 0 0; font-size: 13px; color: var(--danger); }
+.jobfit-results { margin-top: 16px; }
+.jobfit-verdict { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.jobfit-verdict h4 { margin: 0 0 6px; color: var(--accent); font-size: 15px; }
+.jobfit-verdict p { margin: 0; color: var(--text); font-size: 14px; line-height: 1.55; }
+.jobfit-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
+.jobfit-card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.jobfit-card h4 { margin: 0 0 8px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.jobfit-card ul { margin: 0; padding-left: 18px; }
+.jobfit-card li { font-size: 13px; line-height: 1.6; color: var(--text); }
+.jobfit-card p { margin: 0; font-size: 13px; }
+
 /* Rising tech list */
 .rising { list-style: none; padding: 0; margin: 0; }
 .rising li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }

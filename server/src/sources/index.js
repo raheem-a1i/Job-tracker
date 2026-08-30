@@ -5,9 +5,6 @@ import * as remotive from './remotive.js';
 import * as remoteok from './remoteok.js';
 import * as adzuna from './adzuna.js';
 import * as arbeitnow from './arbeitnow.js';
-import * as jobicy from './jobicy.js';
-import * as themuse from './themuse.js';
-import * as greenhouse from './greenhouse.js';
 import * as sample from './sample.js';
 
 const ADAPTERS = {
@@ -15,9 +12,6 @@ const ADAPTERS = {
   [remoteok.name]: remoteok,
   [adzuna.name]: adzuna,
   [arbeitnow.name]: arbeitnow,
-  [jobicy.name]: jobicy,
-  [themuse.name]: themuse,
-  [greenhouse.name]: greenhouse,
   [sample.name]: sample,
 };
 

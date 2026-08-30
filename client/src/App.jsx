@@ -10,6 +10,7 @@ import MySkills from './components/MySkills.jsx';
 import SkillGap from './components/SkillGap.jsx';
 import DemandHistory from './components/DemandHistory.jsx';
 import JobsTable from './components/JobsTable.jsx';
+import JobFitCoach from './components/JobFitCoach.jsx';
 
 export default function App() {
   const [status, setStatus] = useState(null);
@@ -107,9 +108,9 @@ export default function App() {
           </p>
           <div className="row" style={{ marginTop: 10 }}>
             {status && (
-              <span className={`badge ${status.provider === 'local' ? 'on' : 'off'}`}>
-                {status.provider === 'local'
-                  ? `● Local AI · ${status.model?.split('/').pop()}`
+              <span className={`badge ${status.provider === 'claude' ? 'on' : 'off'}`}>
+                {status.provider === 'claude'
+                  ? `● Claude · ${status.model}`
                   : '● Heuristic extractor'}
               </span>
             )}
@@ -140,6 +141,8 @@ export default function App() {
       {error && <div className="panel error" style={{ marginBottom: 20 }}>Error: {error}</div>}
 
       <Filters facets={facets} filters={filters} onChange={setFilters} />
+
+      <JobFitCoach />
 
       {loading || !trends ? (
         <div className="loading">Loading market signals…</div>
@@ -187,8 +190,8 @@ export default function App() {
               refreshes, and the postings table scores each job by how many of your skills it needs.
               Click any skill to drill the dashboard into it. Salary bands show the median
               annualized midpoint per role. Signals were extracted by{' '}
-              {status?.provider === 'local'
-                ? 'an in-process model, with a keyword fallback'
+              {status?.provider === 'claude'
+                ? 'Claude, with a keyword fallback'
                 : 'the keyword heuristic'}.
             </p>
           </div>

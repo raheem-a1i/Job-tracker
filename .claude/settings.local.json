@@ -32,7 +32,14 @@
       "Bash(rm -f server/data/jobs.json server/data/meta.json server/data/history.json)",
       "Bash(sed -i 's/^AI_MAX_JOBS=.*/AI_MAX_JOBS=300/' .env)",
       "Bash(printf 'AI_MAX_JOBS=300\\\\n')",
-      "Bash(node _nontest.mjs)"
+      "Bash(node _nontest.mjs)",
+      "Bash(cd \"C:/Users/Raheem/Desktop/Codeing/server\" && echo \"--- in package.json? ---\"; grep -c \"@anthropic-ai/sdk\" package.json; echo \"--- installed in node_modules? ---\"; test -d node_modules/@anthropic-ai/sdk && echo \"YES present\" || echo \"NO missing\"; echo \"--- ANTHROPIC_API_KEY set in .env? ---\"; grep -q '^ANTHROPIC_API_KEY=.\\\\+' ../.env && echo \"YES has a value\" || echo \"empty or absent\")",
+      "Bash(PORT=4070 SOURCES=sample node server/src/index.js)",
+      "Bash(echo \"pid $!\")",
+      "Bash(kill 453)",
+      "Bash(sed -i 's/^AI_MAX_JOBS=.*/AI_MAX_JOBS=60/' .env)",
+      "Bash(sed -i 's/^CLAUDE_MODEL=.*/CLAUDE_MODEL=claude-sonnet-5/' .env)",
+      "Bash(printf 'CLAUDE_MODEL=claude-sonnet-5\\\\n')"
     ]
   }
 }

@@ -9,31 +9,17 @@ const int = (value, fallback) => {
 export const config = {
   port: int(process.env.PORT, 4000),
 
-  // Max postings sent to the local model per refresh (rest use the heuristic).
+  // Claude extraction model (sonnet-5 is much cheaper than opus for bulk work).
+  claudeModel: process.env.CLAUDE_MODEL?.trim() || 'claude-sonnet-5',
+  // Cost / rate guards for the Claude extraction step.
   aiMaxJobs: int(process.env.AI_MAX_JOBS, 60),
-
-  // Extraction provider:
-  //   'local'     → in-process zero-shot classifier (runs on this host)
-  //   'heuristic' → rule-based extractor (default; no model download)
-  aiProvider: (process.env.AI_PROVIDER?.trim() || 'heuristic').toLowerCase(),
-  // Hugging Face model id for the local role classifier (downloaded + cached once).
-  localAiModel: process.env.LOCAL_AI_MODEL?.trim() || 'Xenova/nli-deberta-v3-small',
+  aiConcurrency: Math.max(1, int(process.env.AI_CONCURRENCY, 5)),
 
   // Adzuna API credentials (free from https://developer.adzuna.com).
   // Only needed when 'adzuna' is in SOURCES.
   adzunaAppId: process.env.ADZUNA_APP_ID?.trim() || null,
   adzunaAppKey: process.env.ADZUNA_APP_KEY?.trim() || null,
   adzunaCountry: (process.env.ADZUNA_COUNTRY?.trim() || 'us').toLowerCase(),
-
-  // Greenhouse company board slugs to pull from (only used if 'greenhouse' is
-  // in SOURCES). Each token is a company's public Greenhouse board.
-  greenhouseCompanies: (
-    process.env.GREENHOUSE_COMPANIES?.trim() ||
-    'anthropic,stripe,databricks,figma,discord,gitlab,brex,flexport,rippling,mongodb'
-  )
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean),
 
   // Which source adapters to pull from, and how many postings each.
   sources: (process.env.SOURCES?.trim() || 'remotive,remoteok')
@@ -42,3 +28,6 @@ export const config = {
     .filter(Boolean),
   sourceLimit: int(process.env.SOURCE_LIMIT, 80),
 };
+
+// True when Claude extraction is available; otherwise the heuristic is used.
+export const claudeEnabled = Boolean(process.env.ANTHROPIC_API_KEY?.trim());

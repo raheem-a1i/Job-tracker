@@ -9,6 +9,14 @@ function qs(filters = {}) {
   return s ? `?${s}` : '';
 }
 
+async function readJson(res, fallback) {
+  try {
+    return await res.json();
+  } catch {
+    return fallback;
+  }
+}
+
 export async function getStatus() {
   const res = await fetch('/api/status');
   if (!res.ok) throw new Error('status failed');
@@ -44,4 +52,15 @@ export async function startRefresh() {
   if (res.status === 409) throw new Error('A refresh is already running');
   if (!res.ok) throw new Error('refresh failed');
   return res.json();
+}
+
+export async function getJobFit(jobId, skills) {
+  const res = await fetch('/api/job-fit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jobId, skills }),
+  });
+  const body = await readJson(res, {});
+  if (!res.ok) throw new Error(body.error || 'job fit analysis failed');
+  return body;
 }

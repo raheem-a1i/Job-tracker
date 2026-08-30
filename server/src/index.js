@@ -9,6 +9,7 @@ import { getJobs, getMeta, getHistory } from './store/jsonStore.js';
 import { computeTrends, computeFacets, filterJobs, computeSkillGraph } from './analytics.js';
 import { runRefresh, isRefreshing, getProgress, ensureSeeded } from './pipeline.js';
 import { resolveProvider } from './ai/extract.js';
+import { analyzeJobFit, JOB_FIT_MODEL } from './ai/jobFit.js';
 import { ALL_SKILLS } from './ai/taxonomy.js';
 
 // Built React app (present in production single-host deploys).
@@ -25,7 +26,7 @@ app.get('/api/status', async (req, res) => {
   res.json({
     ok: true,
     provider,
-    model: provider === 'local' ? config.localAiModel : null,
+    model: provider === 'claude' ? config.claudeModel : null,
     sources: config.sources,
     allSkills: ALL_SKILLS,
     refreshing: isRefreshing(),
@@ -62,6 +63,39 @@ app.get('/api/skill-graph', async (req, res) => {
 // Dated demand snapshots for the demand-over-time chart.
 app.get('/api/history', async (req, res) => {
   res.json({ history: await getHistory() });
+});
+
+app.post('/api/job-fit', async (req, res) => {
+  const jobId = typeof req.body?.jobId === 'string' ? req.body.jobId.trim() : '';
+  const skills = Array.isArray(req.body?.skills)
+    ? req.body.skills
+        .filter((skill) => typeof skill === 'string' && skill.trim())
+        .map((skill) => skill.trim())
+        .slice(0, 5)
+    : [];
+
+  if (!jobId || skills.length === 0) {
+    return res.status(400).json({ error: 'Choose a job and save at least one skill' });
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(503).json({ error: 'ANTHROPIC_API_KEY is not configured' });
+  }
+
+  const jobs = await getJobs();
+  const job = jobs.find((candidate) => candidate.id === jobId);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  try {
+    const analysis = await analyzeJobFit(job, skills);
+    return res.json({ jobId: job.id, model: JOB_FIT_MODEL, analysis });
+  } catch (err) {
+    // Surface the real Anthropic error so key/billing/model issues are visible.
+    console.error('Claude job fit analysis failed:', err);
+    const status = err?.status ? `HTTP ${err.status}` : err?.name || 'error';
+    const detail = err?.error?.error?.message || err?.message || 'unknown error';
+    return res.status(502).json({ error: `Claude ${status}: ${detail}` });
+  }
 });
 
 // Trigger a scrape + extract. Returns immediately; poll /api/status for progress.

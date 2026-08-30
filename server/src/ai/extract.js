@@ -1,20 +1,13 @@
-// Extraction orchestrator: routes each job through the configured provider
-// (in-process local model, or the rule-based heuristic) with an automatic
-// per-job fallback to the heuristic. aiMaxJobs caps how many postings hit the
-// (slower) local model per refresh.
-import { config } from '../config.js';
+// Extraction orchestrator: routes each job through Claude (when a key is set)
+// with an automatic per-job fallback to the rule-based heuristic. Bounded
+// concurrency stays within rate limits; aiMaxJobs caps Claude spend per refresh.
+import { config, claudeEnabled } from '../config.js';
+import { claudeExtract } from './claude.js';
 import { heuristicExtract } from './heuristic.js';
-
-// The local model pulls in a heavy dependency, so load it only when needed.
-let localModule = null;
-async function getLocal() {
-  if (!localModule) localModule = await import('./local.js');
-  return localModule;
-}
 
 // Resolve which extractor a run will use.
 export function resolveProvider() {
-  return config.aiProvider === 'local' ? 'local' : 'heuristic';
+  return claudeEnabled ? 'claude' : 'heuristic';
 }
 
 // Run async `worker` over `items` with at most `concurrency` in flight.
@@ -33,28 +26,17 @@ async function mapLimit(items, concurrency, worker) {
 
 export async function extractAll(jobs, { onProgress } = {}) {
   const provider = resolveProvider();
-  const stats = { provider, local: 0, heuristic: 0, aiFailures: 0, total: jobs.length };
+  const stats = { provider, claude: 0, heuristic: 0, aiFailures: 0, total: jobs.length };
   let done = 0;
 
-  // Warm up the local model once so the first posting isn't slow mid-loop.
-  let local = null;
-  if (provider === 'local') {
-    try {
-      local = await getLocal();
-      await local.warmupLocalAi();
-    } catch {
-      local = null; // model unavailable → every job falls back to heuristic
-    }
-  }
-
-  const enriched = await mapLimit(jobs, 1, async (job, index) => {
-    const useLocal = provider === 'local' && local && index < config.aiMaxJobs;
+  const enriched = await mapLimit(jobs, config.aiConcurrency, async (job, index) => {
+    const useClaude = provider === 'claude' && index < config.aiMaxJobs;
     let extraction;
 
-    if (useLocal) {
+    if (useClaude) {
       try {
-        extraction = await local.localExtract(job);
-        stats.local++;
+        extraction = await claudeExtract(job);
+        stats.claude++;
       } catch {
         stats.aiFailures++;
         extraction = heuristicExtract(job);
